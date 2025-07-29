@@ -13,9 +13,10 @@ export class ProjectPipelinesStack extends cdk.Stack {
       "/project-pipeline/code-connection"
     );
 
-    console.log("codeConnectionArn", codeConnectionArn);
+    console.log("ENV", process.env.CDK_DEFAULT_ACCOUNT);
+    console.log("ENV", process.env.CDK_DEFAULT_REGION);
 
-    const pipeline = new CodePipeline(this, "ProjectPipelines", {
+    new CodePipeline(this, "ProjectPipelines", {
       pipelineName: "ProjectPipelines",
       synth: new ShellStep("Synth", {
         input: CodePipelineSource.connection("jacobg1/project-pipelines", "main", {
