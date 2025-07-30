@@ -14,7 +14,7 @@ interface SourceConfig {
   connectionArn: string;
 }
 
-export function createCDKPipeline(
+export function createCodePipeline(
   stack: ProjectPipelinesStack,
   pipelineName: string,
   { name, branch, connectionArn }: SourceConfig,
