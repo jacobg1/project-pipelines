@@ -75,12 +75,25 @@ function addPermissions(role: Role): Role {
   role.addToPolicy(
     new PolicyStatement({
       effect: Effect.ALLOW,
-      resources: ["*"],
+      resources: ["arn:aws:iam::*"],
       actions: [
         "iam:GetRole",
         "iam:CreateRole",
         "iam:AttachRolePolicy",
         "iam:PassRole",
+        "iam:DeleteRolePolicy",
+        "iam:TagRole",
+        "iam:PutRolePolicy",
+        "iam:DeleteRole",
+      ],
+    })
+  );
+
+  role.addToPolicy(
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      resources: ["arn:aws:lambda:*"],
+      actions: [
         "lambda:GetFunctionConfiguration",
         "lambda:PublishVersion",
         "lambda:ListVersionsByFunction",
@@ -89,6 +102,9 @@ function addPermissions(role: Role): Role {
         "lambda:ListFunctions",
         "lambda:GetFunction",
         "lambda:DeleteFunction",
+        "lambda:TagResource",
+        "lambda:AddPermission",
+        "lambda:RemovePermission",
       ],
     })
   );
@@ -96,8 +112,16 @@ function addPermissions(role: Role): Role {
   role.addToPolicy(
     new PolicyStatement({
       effect: Effect.ALLOW,
-      resources: ["arn:aws:apigateway:*::/restapis/*"],
-      actions: ["apigateway:GET", "apigateway:POST", "apigateway:DELETE"],
+      resources: ["arn:aws:logs:*"],
+      actions: ["logs:DeleteLogGroup", "logs:CreateLogGroup", "logs:TagResource"],
+    })
+  );
+
+  role.addToPolicy(
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      resources: ["arn:aws:apigateway:*::/restapis*", "arn:aws:apigateway:*::/tags*"],
+      actions: ["apigateway:GET", "apigateway:PUT", "apigateway:POST", "apigateway:DELETE"],
     })
   );
 
