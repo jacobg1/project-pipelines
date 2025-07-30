@@ -29,7 +29,7 @@ export class ProjectPipelinesStack extends cdk.Stack {
         branch: "pipeline-test",
         connectionArn,
       },
-      ["npm ci", "npm run deploy:test"]
+      ["npm ci"]
     );
   }
 }

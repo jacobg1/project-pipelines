@@ -43,7 +43,7 @@ export function createPipeline(
   commands: string[]
 ): Pipeline {
   const sourceArtifact = new Artifact("SourceArtifact");
-  // const buildArtifact = new Artifact("BuildArtifact");
+  const buildArtifact = new Artifact("BuildArtifact");
 
   const codeSource = new CodeStarConnectionsSourceAction({
     actionName: `${pipelineName}-CodeSource`,
@@ -54,13 +54,13 @@ export function createPipeline(
     output: sourceArtifact,
   });
 
-  const deployAction = new CodeBuildAction({
-    actionName: `${pipelineName}-CodeDeploy`,
-    project: new PipelineProject(stack, `${pipelineName}-CodeDeployProject`, {
+  const buildAction = new CodeBuildAction({
+    actionName: `${pipelineName}-CodeBuild`,
+    project: new PipelineProject(stack, `${pipelineName}-CodeBuildProject`, {
       buildSpec: BuildSpec.fromObject({ commands }),
     }),
     input: sourceArtifact,
-    // outputs: [buildArtifact],
+    outputs: [buildArtifact],
   });
 
   const pipeline = new Pipeline(stack, pipelineName, {
@@ -72,8 +72,8 @@ export function createPipeline(
         actions: [codeSource],
       },
       {
-        stageName: ActionCategory.DEPLOY,
-        actions: [deployAction],
+        stageName: ActionCategory.BUILD,
+        actions: [buildAction],
       },
     ],
   });
