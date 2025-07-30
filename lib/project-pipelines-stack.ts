@@ -1,13 +1,14 @@
 import * as cdk from "aws-cdk-lib";
 
 import { Construct } from "constructs";
-import { getSSMParam, createCDKPipeline, createPipeline } from "../src";
+import { getSSMParam, getSecureSSMParam, createCDKPipeline, createPipeline } from "../src";
 
 export class ProjectPipelinesStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const connectionArn = getSSMParam(this, "/project-pipeline/code-connection");
+    const serverlessLoginKey = getSecureSSMParam("/serverless/login/key");
 
     createCDKPipeline(
       this,
@@ -29,7 +30,7 @@ export class ProjectPipelinesStack extends cdk.Stack {
         branch: "pipeline-test",
         connectionArn,
       },
-      ["npm ci"]
+      serverlessLoginKey
     );
   }
 }

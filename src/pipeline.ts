@@ -6,6 +6,7 @@ import {
   CodeStarConnectionsSourceAction,
 } from "aws-cdk-lib/aws-codepipeline-actions";
 import { BuildSpec, PipelineProject } from "aws-cdk-lib/aws-codebuild";
+import { SecretValue } from "aws-cdk-lib";
 
 interface SourceConfig {
   name: string;
@@ -40,7 +41,7 @@ export function createPipeline(
   stack: ProjectPipelinesStack,
   pipelineName: string,
   { name, owner, branch, connectionArn }: PipelineSourceConfig,
-  commands: string[]
+  serverlessLoginKey: SecretValue
 ): Pipeline {
   const sourceArtifact = new Artifact("SourceArtifact");
   // const buildArtifact = new Artifact("BuildArtifact");
@@ -61,13 +62,19 @@ export function createPipeline(
         version: "0.2",
         phases: {
           install: {
-            commands: ["npm i -g serverless@4.17.1", "serverless login", "npm ci"],
+            commands: ["npm i -g serverless@4.17.1", "npm ci"],
+          },
+          pre_build: {
+            commands: ["serverless login"],
           },
           build: {
             commands: ["npm run deploy:test"],
           },
         },
       }),
+      environmentVariables: {
+        SERVERLESS_ACCESS_KEY: { value: serverlessLoginKey },
+      },
     }),
     input: sourceArtifact,
   });
