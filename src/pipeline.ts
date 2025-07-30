@@ -4,9 +4,32 @@ import { ActionCategory, Artifact, Pipeline, PipelineType } from "aws-cdk-lib/aw
 import {
   CodeBuildAction,
   CodeStarConnectionsSourceAction,
+  ManualApprovalAction,
 } from "aws-cdk-lib/aws-codepipeline-actions";
 import { BuildSpec, PipelineProject } from "aws-cdk-lib/aws-codebuild";
 import { Role } from "aws-cdk-lib/aws-iam";
+
+function createBuildSpec(buildCommand: string): BuildSpec {
+  return BuildSpec.fromObject({
+    version: "0.2",
+    env: {
+      "parameter-store": {
+        SERVERLESS_ACCESS_KEY: "/serverless/login/key",
+      },
+    },
+    phases: {
+      install: {
+        commands: ["npm i -g serverless@4.17.1", "npm ci"],
+      },
+      pre_build: {
+        commands: ["serverless login"],
+      },
+      build: {
+        commands: [buildCommand],
+      },
+    },
+  });
+}
 
 interface SourceConfig {
   name: string;
@@ -44,7 +67,6 @@ export function createPipeline(
   { name, owner, branch, connectionArn }: PipelineSourceConfig
 ): Pipeline {
   const sourceArtifact = new Artifact("SourceArtifact");
-  // const buildArtifact = new Artifact("BuildArtifact");
 
   const codeSource = new CodeStarConnectionsSourceAction({
     actionName: `${pipelineName}-CodeSource`,
@@ -55,31 +77,26 @@ export function createPipeline(
     output: sourceArtifact,
   });
 
-  const deployAction = new CodeBuildAction({
-    actionName: `${pipelineName}-CodeBuild`,
-    project: new PipelineProject(stack, `${pipelineName}-CodeBuildProject`, {
-      buildSpec: BuildSpec.fromObject({
-        version: "0.2",
-        env: {
-          "parameter-store": {
-            SERVERLESS_ACCESS_KEY: "/serverless/login/key",
-          },
-        },
-        phases: {
-          install: {
-            commands: ["npm i -g serverless@4.17.1", "npm ci"],
-          },
-          pre_build: {
-            commands: ["serverless login"],
-          },
-          build: {
-            commands: ["npm run deploy:test"],
-          },
-        },
-      }),
+  const deployToTestAction = new CodeBuildAction({
+    actionName: `${pipelineName}-CodeBuildTest`,
+    project: new PipelineProject(stack, `${pipelineName}-CodeBuildProjectTest`, {
+      buildSpec: createBuildSpec("npm run deploy:test"),
       role,
     }),
     input: sourceArtifact,
+  });
+
+  const deployToProdAction = new CodeBuildAction({
+    actionName: `${pipelineName}-CodeBuildProd`,
+    project: new PipelineProject(stack, `${pipelineName}-CodeBuildProjectProd`, {
+      buildSpec: createBuildSpec("npm run deploy:legacy"),
+      role,
+    }),
+    input: sourceArtifact,
+  });
+
+  const approvalAction = new ManualApprovalAction({
+    actionName: `${pipelineName}-ManualApproval`,
   });
 
   const pipeline = new Pipeline(stack, pipelineName, {
@@ -90,10 +107,17 @@ export function createPipeline(
         stageName: ActionCategory.SOURCE,
         actions: [codeSource],
       },
-      // { stageName: ActionCategory.APPROVAL },
+      {
+        stageName: ActionCategory.TEST,
+        actions: [deployToTestAction],
+      },
+      {
+        stageName: ActionCategory.APPROVAL,
+        actions: [approvalAction],
+      },
       {
         stageName: ActionCategory.DEPLOY,
-        actions: [deployAction],
+        actions: [deployToProdAction],
       },
     ],
   });
