@@ -1,7 +1,7 @@
 import { ProjectPipelinesStack } from "../lib/project-pipelines-stack";
 import { Effect, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 
-export function createArn(service: string, name: string) {
+function createArn(service: string, name: string) {
   const regionAndAccount = `${process.env.CDK_DEFAULT_REGION}:${process.env.CDK_DEFAULT_ACCOUNT}`;
   return `arn:aws:${service}:${regionAndAccount}:${name}`;
 }
