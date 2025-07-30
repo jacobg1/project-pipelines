@@ -1,7 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 
 import { Construct } from "constructs";
-import { getSSMParam, createPipeline } from "../src";
+import { getSSMParam, createCDKPipeline, createPipeline } from "../src";
 
 export class ProjectPipelinesStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -9,7 +9,7 @@ export class ProjectPipelinesStack extends cdk.Stack {
 
     const connectionArn = getSSMParam(this, "/project-pipeline/code-connection");
 
-    createPipeline(
+    createCDKPipeline(
       this,
       "ProjectPipelines",
       {
@@ -20,11 +20,16 @@ export class ProjectPipelinesStack extends cdk.Stack {
       ["npm ci", "npm run build", "npx cdk synth"]
     );
 
-    const spaceSearchPipeline = createPipeline(
+    createPipeline(
       this,
       "SpaceSearchPipeline",
-      { name: "jacobg1/NasaSearch", branch: "pipeline-test", connectionArn },
-      ["npm ci"]
+      {
+        name: "NasaSearch",
+        owner: "jacobg1",
+        branch: "pipeline-test",
+        connectionArn,
+      },
+      ["npm ci", "npm run deploy:test"]
     );
   }
 }
