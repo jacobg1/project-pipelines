@@ -57,7 +57,7 @@ export function createPipeline(
   const buildAction = new CodeBuildAction({
     actionName: `${pipelineName}-CodeBuild`,
     project: new PipelineProject(stack, `${pipelineName}-CodeBuildProject`, {
-      buildSpec: BuildSpec.fromObject({ commands }),
+      buildSpec: BuildSpec.fromObject({ version: "0.2", commands }),
     }),
     input: sourceArtifact,
     outputs: [buildArtifact],
