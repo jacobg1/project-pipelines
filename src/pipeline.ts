@@ -61,7 +61,7 @@ export function createPipeline(
         version: "0.2",
         phases: {
           install: {
-            commands: ["npm ci"],
+            commands: ["npm i -g serverless@4.17.1", "npm ci"],
           },
           build: {
             commands: ["npm run deploy:test"],
