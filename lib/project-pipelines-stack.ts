@@ -25,7 +25,7 @@ export class ProjectPipelinesStack extends cdk.Stack {
     createPipeline(this, "SpaceSearchPipeline", role, {
       name: "NasaSearch",
       owner: "jacobg1",
-      branch: "pipeline-test",
+      branch: "main",
       connectionArn,
     });
   }

@@ -89,7 +89,7 @@ export function createPipeline(
   const deployToProdAction = new CodeBuildAction({
     actionName: `${pipelineName}-CodeBuildProd`,
     project: new PipelineProject(stack, `${pipelineName}-CodeBuildProjectProd`, {
-      buildSpec: createBuildSpec("npm run deploy:legacy"),
+      buildSpec: createBuildSpec("npm run deploy"),
       role,
     }),
     input: sourceArtifact,
