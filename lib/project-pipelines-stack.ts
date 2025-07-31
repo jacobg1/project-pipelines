@@ -22,7 +22,11 @@ const pipelines: PipelineConfig[] = [
       name: "NasaSearch",
       owner: "jacobg1",
       branch: "main",
-      commands: { test: ["npm run deploy:test"], prod: ["npm run deploy"] },
+      commands: {
+        install: ["npm i -g serverless@4.17.1", "npm ci"],
+        test: ["npm run deploy:test"],
+        prod: ["npm run deploy"],
+      },
     },
   },
   {
@@ -32,7 +36,11 @@ const pipelines: PipelineConfig[] = [
       name: "concert-search-v2-back-end",
       owner: "jacobg1",
       branch: "main",
-      commands: { test: ["npm run deploy:test"], prod: ["npm run deploy"] },
+      commands: {
+        install: ["npm i -g serverless@4.17.1 @nestjs/cli@11.0.10", "npm ci"],
+        test: ["npm run deploy:test"],
+        prod: ["npm run deploy"],
+      },
     },
   },
 ];
