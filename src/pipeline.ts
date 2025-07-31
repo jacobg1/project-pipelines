@@ -12,7 +12,6 @@ import { CreateCodePipelineProps, CreatePipelineProps } from "./types";
 function createBuildSpec(buildCommand: string[], installCommand: string[]): BuildSpec {
   return BuildSpec.fromObject({
     version: "0.2",
-
     env: {
       "parameter-store": {
         SERVERLESS_ACCESS_KEY: "/serverless/login/key",
