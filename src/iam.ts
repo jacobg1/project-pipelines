@@ -125,7 +125,13 @@ function addPermissions(role: Role): Role {
         "arn:aws:apigateway:*::/tags*",
         "arn:aws:apigateway:*::/apis*",
       ],
-      actions: ["apigateway:GET", "apigateway:PUT", "apigateway:POST", "apigateway:DELETE"],
+      actions: [
+        "apigateway:GET",
+        "apigateway:PUT",
+        "apigateway:POST",
+        "apigateway:DELETE",
+        "apigateway:TagResource",
+      ],
     })
   );
 
