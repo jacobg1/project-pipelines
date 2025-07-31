@@ -9,7 +9,7 @@ import {
 import { BuildSpec, PipelineProject } from "aws-cdk-lib/aws-codebuild";
 import { CreateCodePipelineProps, CreatePipelineProps } from "./types";
 
-function createBuildSpec(buildCommand: string[]): BuildSpec {
+function createBuildSpec(buildCommand: string[], installCommand: string[]): BuildSpec {
   return BuildSpec.fromObject({
     version: "0.2",
 
@@ -23,7 +23,7 @@ function createBuildSpec(buildCommand: string[]): BuildSpec {
         "runtime-versions": {
           nodejs: "22.x",
         },
-        commands: ["npm i -g serverless@4.17.1", "npm ci"],
+        commands: [installCommand],
       },
       pre_build: {
         commands: ["serverless login"],
@@ -60,7 +60,14 @@ export function createCodePipeline(
 export function createPipeline(
   stack: ProjectPipelinesStack,
   pipelineName: string,
-  { name, owner, branch, role, connectionArn, commands: { test, prod } }: CreatePipelineProps
+  {
+    name,
+    owner,
+    branch,
+    role,
+    connectionArn,
+    commands: { install, test, prod },
+  }: CreatePipelineProps
 ): Pipeline {
   if (!test?.length) {
     throw new Error("Missing test command");
@@ -68,6 +75,10 @@ export function createPipeline(
 
   if (!prod?.length) {
     throw new Error("Missing prod command");
+  }
+
+  if (!install?.length) {
+    throw new Error("Missing install command");
   }
 
   const sourceArtifact = new Artifact("SourceArtifact");
@@ -84,7 +95,7 @@ export function createPipeline(
   const deployToTestAction = new CodeBuildAction({
     actionName: `${pipelineName}-CodeBuildTest`,
     project: new PipelineProject(stack, `${pipelineName}-CodeBuildProjectTest`, {
-      buildSpec: createBuildSpec(test),
+      buildSpec: createBuildSpec(test, install),
       role,
     }),
     input: sourceArtifact,
@@ -93,7 +104,7 @@ export function createPipeline(
   const deployToProdAction = new CodeBuildAction({
     actionName: `${pipelineName}-CodeBuildProd`,
     project: new PipelineProject(stack, `${pipelineName}-CodeBuildProjectProd`, {
-      buildSpec: createBuildSpec(prod),
+      buildSpec: createBuildSpec(prod, install),
       role,
     }),
     input: sourceArtifact,
