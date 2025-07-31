@@ -12,6 +12,7 @@ import { CreateCodePipelineProps, CreatePipelineProps } from "./types";
 function createBuildSpec(buildCommand: string[]): BuildSpec {
   return BuildSpec.fromObject({
     version: "0.2",
+
     env: {
       "parameter-store": {
         SERVERLESS_ACCESS_KEY: "/serverless/login/key",
@@ -19,6 +20,9 @@ function createBuildSpec(buildCommand: string[]): BuildSpec {
     },
     phases: {
       install: {
+        "runtime-versions": {
+          nodejs: "22.x",
+        },
         commands: ["npm i -g serverless@4.17.1", "npm ci"],
       },
       pre_build: {
