@@ -7,9 +7,9 @@ import {
   ManualApprovalAction,
 } from "aws-cdk-lib/aws-codepipeline-actions";
 import { BuildSpec, PipelineProject } from "aws-cdk-lib/aws-codebuild";
-import { Role } from "aws-cdk-lib/aws-iam";
+import { CreateCodePipelineProps, CreatePipelineProps } from "./types";
 
-function createBuildSpec(buildCommand: string): BuildSpec {
+function createBuildSpec(buildCommand: string[]): BuildSpec {
   return BuildSpec.fromObject({
     version: "0.2",
     env: {
@@ -25,47 +25,47 @@ function createBuildSpec(buildCommand: string): BuildSpec {
         commands: ["serverless login"],
       },
       build: {
-        commands: [buildCommand],
+        commands: buildCommand,
       },
     },
   });
 }
 
-interface SourceConfig {
-  name: string;
-  branch: string;
-  connectionArn: string;
-}
-
 export function createCodePipeline(
   stack: ProjectPipelinesStack,
   pipelineName: string,
-  { name, branch, connectionArn }: SourceConfig,
-  commands: string[]
+  { name, owner, branch, connectionArn, commands: { synth } }: CreateCodePipelineProps
 ): CodePipeline {
+  if (!synth?.length) {
+    throw new Error("Missing synth command");
+  }
+
   const pipeline = new CodePipeline(stack, pipelineName, {
     pipelineName,
     synth: new ShellStep("Synth", {
-      input: CodePipelineSource.connection(name, branch, {
+      input: CodePipelineSource.connection(`${owner}/${name}`, branch, {
         connectionArn,
       }),
-      commands,
+      commands: synth,
     }),
   });
 
   return pipeline;
 }
 
-interface PipelineSourceConfig extends SourceConfig {
-  owner: string;
-}
-
 export function createPipeline(
   stack: ProjectPipelinesStack,
   pipelineName: string,
-  role: Role,
-  { name, owner, branch, connectionArn }: PipelineSourceConfig
+  { name, owner, branch, role, connectionArn, commands: { test, prod } }: CreatePipelineProps
 ): Pipeline {
+  if (!test?.length) {
+    throw new Error("Missing test command");
+  }
+
+  if (!prod?.length) {
+    throw new Error("Missing prod command");
+  }
+
   const sourceArtifact = new Artifact("SourceArtifact");
 
   const codeSource = new CodeStarConnectionsSourceAction({
@@ -80,7 +80,7 @@ export function createPipeline(
   const deployToTestAction = new CodeBuildAction({
     actionName: `${pipelineName}-CodeBuildTest`,
     project: new PipelineProject(stack, `${pipelineName}-CodeBuildProjectTest`, {
-      buildSpec: createBuildSpec("npm run deploy:test"),
+      buildSpec: createBuildSpec(test),
       role,
     }),
     input: sourceArtifact,
@@ -89,7 +89,7 @@ export function createPipeline(
   const deployToProdAction = new CodeBuildAction({
     actionName: `${pipelineName}-CodeBuildProd`,
     project: new PipelineProject(stack, `${pipelineName}-CodeBuildProjectProd`, {
-      buildSpec: createBuildSpec("npm run deploy"),
+      buildSpec: createBuildSpec(prod),
       role,
     }),
     input: sourceArtifact,
