@@ -2,7 +2,30 @@ import * as cdk from "aws-cdk-lib";
 
 import { Construct } from "constructs";
 import { getSSMParam, createCodePipeline, createPipeline } from "../src";
-import { createBuildRole } from "../src/iam";
+import { createBuildRole, type PipelineConfig } from "../src";
+
+const pipelines: PipelineConfig[] = [
+  {
+    pipeLineName: "ProjectPipelines",
+    createFunction: createCodePipeline,
+    props: {
+      name: "project-pipelines",
+      owner: "jacobg1",
+      branch: "main",
+      commands: { synth: ["npm ci", "npm run build", "npx cdk synth"] },
+    },
+  },
+  {
+    pipeLineName: "SpaceSearchPipeline",
+    createFunction: createPipeline,
+    props: {
+      name: "NasaSearch",
+      owner: "jacobg1",
+      branch: "main",
+      commands: { test: ["npm run deploy:test"], prod: ["npm run deploy"] },
+    },
+  },
+];
 
 export class ProjectPipelinesStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -11,22 +34,8 @@ export class ProjectPipelinesStack extends cdk.Stack {
     const connectionArn = getSSMParam(this, "/project-pipeline/code-connection");
     const role = createBuildRole(this, "ProjectPipelinesRole");
 
-    createCodePipeline(
-      this,
-      "ProjectPipelines",
-      {
-        name: "jacobg1/project-pipelines",
-        branch: "main",
-        connectionArn,
-      },
-      ["npm ci", "npm run build", "npx cdk synth"]
-    );
-
-    createPipeline(this, "SpaceSearchPipeline", role, {
-      name: "NasaSearch",
-      owner: "jacobg1",
-      branch: "main",
-      connectionArn,
+    pipelines.forEach(({ pipeLineName, createFunction, props }) => {
+      createFunction(this, pipeLineName, { ...props, role, connectionArn });
     });
   }
 }
