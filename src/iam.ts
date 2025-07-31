@@ -120,7 +120,11 @@ function addPermissions(role: Role): Role {
   role.addToPolicy(
     new PolicyStatement({
       effect: Effect.ALLOW,
-      resources: ["arn:aws:apigateway:*::/restapis*", "arn:aws:apigateway:*::/tags*"],
+      resources: [
+        "arn:aws:apigateway:*::/restapis*",
+        "arn:aws:apigateway:*::/tags*",
+        "arn:aws:apigateway:*::/apis*",
+      ],
       actions: ["apigateway:GET", "apigateway:PUT", "apigateway:POST", "apigateway:DELETE"],
     })
   );
