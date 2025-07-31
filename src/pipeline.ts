@@ -23,7 +23,7 @@ function createBuildSpec(buildCommand: string[], installCommand: string[]): Buil
         "runtime-versions": {
           nodejs: "22.x",
         },
-        commands: [installCommand],
+        commands: installCommand,
       },
       pre_build: {
         commands: ["serverless login"],
