@@ -3,22 +3,23 @@ import { Role } from "aws-cdk-lib/aws-iam";
 import { CodePipeline } from "aws-cdk-lib/pipelines";
 import { ProjectPipelinesStack } from "../../lib/project-pipelines-stack";
 
+interface PipelineCommandsProps {
+  synth?: string[];
+  install?: string[];
+  test?: string[];
+  prod?: string[];
+}
+
 export interface CreateCodePipelineProps {
   name: string;
   owner: string;
   branch: string;
   connectionArn: string;
-  commands: { synth?: string[]; test?: string[]; prod?: string[] };
+  commands: PipelineCommandsProps;
 }
 
 export interface CreatePipelineProps extends CreateCodePipelineProps {
   role: Role;
-}
-
-interface PipelineCommandsProps {
-  synth?: string[];
-  test?: string[];
-  prod?: string[];
 }
 
 interface PipelineConfigProps {
