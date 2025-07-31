@@ -25,6 +25,16 @@ const pipelines: PipelineConfig[] = [
       commands: { test: ["npm run deploy:test"], prod: ["npm run deploy"] },
     },
   },
+  {
+    pipeLineName: "ConcertSearchPipeline",
+    createFunction: createPipeline,
+    props: {
+      name: "concert-search-v2-back-end",
+      owner: "jacobg1",
+      branch: "main",
+      commands: { test: ["npm run deploy:test"], prod: ["npm run deploy"] },
+    },
+  },
 ];
 
 export class ProjectPipelinesStack extends cdk.Stack {
