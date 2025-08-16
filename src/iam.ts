@@ -129,6 +129,7 @@ function addPermissions(role: Role): Role {
       actions: [
         "apigateway:GET",
         "apigateway:PUT",
+        "apigateway:PATCH",
         "apigateway:POST",
         "apigateway:DELETE",
         "apigateway:TagResource",
