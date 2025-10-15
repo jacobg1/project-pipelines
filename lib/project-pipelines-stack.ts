@@ -33,11 +33,11 @@ const pipelines: PipelineConfig[] = [
     pipeLineName: "ConcertSearchPipeline",
     createFunction: createPipeline,
     props: {
-      name: "concert-search-v2-back-end",
+      name: "concert-search-2.0",
       owner: "jacobg1",
       branch: "main",
       commands: {
-        install: ["npm i -g serverless@4.17.1 @nestjs/cli@11.0.10", "npm ci"],
+        install: ["npm i -g serverless@4.17.1 @nestjs/cli@11.0.10 turbo@2.5.5", "npm ci"],
         test: ["npm run deploy:test"],
         prod: ["npm run deploy"],
       },
