@@ -13,8 +13,12 @@ function createBuildSpec(buildCommand: string[], installCommand: string[]): Buil
   return BuildSpec.fromObject({
     version: "0.2",
     env: {
+      variables: {
+        TURBO_TELEMETRY_DISABLED: 1,
+      },
       "parameter-store": {
         SERVERLESS_ACCESS_KEY: "/serverless/login/key",
+        API_BASE_URL: "/concert-search/api-url",
       },
     },
     phases: {
