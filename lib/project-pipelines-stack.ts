@@ -38,8 +38,8 @@ const pipelines: PipelineConfig[] = [
       branch: "main",
       commands: {
         install: ["npm i -g serverless@4.17.1 @nestjs/cli@11.0.10 turbo@2.5.5", "npm ci"],
-        test: ["npm run deploy:test"],
-        prod: ["npm run deploy"],
+        test: ["npm run deploy:test -- --filter=concert-search-api"],
+        prod: ["npm run deploy -- --filter=concert-search-api"],
       },
     },
   },
