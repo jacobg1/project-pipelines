@@ -19,6 +19,8 @@ function createBuildSpec(buildCommand: string[], installCommand: string[]): Buil
       "parameter-store": {
         SERVERLESS_ACCESS_KEY: "/serverless/login/key",
         API_BASE_URL: "/concert-search/api-url",
+        METADATA_URL: "/concert-search/metadata-url",
+        ADVANCED_SEARCH_URL: "/concert-search/advanced-search-url",
       },
     },
     phases: {

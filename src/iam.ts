@@ -15,6 +15,8 @@ function addPermissions(role: Role): Role {
         createArn("ssm", "parameter/serverless/login/key"),
         createArn("ssm", "parameter/nasa-search/api-url"),
         createArn("ssm", "parameter/concert-search/api-url"),
+        createArn("ssm", "parameter/concert-search/metadata-url"),
+        createArn("ssm", "parameter/concert-search/advanced-search-url"),
       ],
       actions: ["ssm:GetParameters", "ssm:GetParameter"],
     })
