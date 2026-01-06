@@ -55,6 +55,7 @@ function addPermissions(role: Role): Role {
         "cloudformation:ListStackRefactorActions",
         "cloudformation:ListStackRefactors",
         "cloudformation:ListStacks",
+        "cloudformation:GetTemplate",
       ],
     })
   );
