@@ -63,7 +63,10 @@ function addPermissions(role: Role): Role {
   role.addToPolicy(
     new PolicyStatement({
       effect: Effect.ALLOW,
-      resources: ["arn:aws:s3:::serverless-framework-deployments-*"],
+      resources: [
+        "arn:aws:s3:::serverless-framework-deployments-*",
+        "arn:aws:s3:::concert-search-*",
+      ],
       actions: [
         "s3:ListBucket",
         "s3:GetObject",
