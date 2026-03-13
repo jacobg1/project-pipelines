@@ -1,5 +1,5 @@
-import { ProjectPipelinesStack } from "../lib/project-pipelines-stack";
 import { Effect, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { ProjectPipelinesStack } from "../lib/project-pipelines-stack";
 
 function createArn(service: string, name: string) {
   const regionAndAccount = `${process.env.CDK_DEFAULT_REGION}:${process.env.CDK_DEFAULT_ACCOUNT}`;
@@ -76,6 +76,7 @@ function addPermissions(role: Role): Role {
         "s3:GetBucketVersioning",
         "s3:PutBucketVersioning",
         "s3:GetBucketLocation",
+        "s3:PutBucketTagging"
       ],
     })
   );
