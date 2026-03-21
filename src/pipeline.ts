@@ -1,12 +1,12 @@
-import { CodePipeline, CodePipelineSource, ShellStep } from "aws-cdk-lib/pipelines";
-import { ProjectPipelinesStack } from "../lib/project-pipelines-stack";
+import { BuildSpec, PipelineProject } from "aws-cdk-lib/aws-codebuild";
 import { ActionCategory, Artifact, Pipeline, PipelineType } from "aws-cdk-lib/aws-codepipeline";
 import {
   CodeBuildAction,
   CodeStarConnectionsSourceAction,
   ManualApprovalAction,
 } from "aws-cdk-lib/aws-codepipeline-actions";
-import { BuildSpec, PipelineProject } from "aws-cdk-lib/aws-codebuild";
+import { CodePipeline, CodePipelineSource, ShellStep } from "aws-cdk-lib/pipelines";
+import { ProjectPipelinesStack } from "../lib/project-pipelines-stack";
 import { CreateCodePipelineProps, CreatePipelineProps } from "./types";
 
 function createBuildSpec(buildCommand: string[], installCommand: string[]): BuildSpec {
@@ -30,9 +30,9 @@ function createBuildSpec(buildCommand: string[], installCommand: string[]): Buil
         },
         commands: installCommand,
       },
-      pre_build: {
-        commands: ["serverless login"],
-      },
+      // pre_build: {
+      //   commands: ["serverless login"],
+      // },
       build: {
         commands: buildCommand,
       },

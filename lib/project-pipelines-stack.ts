@@ -1,8 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 
 import { Construct } from "constructs";
-import { getSSMParam, createCodePipeline, createPipeline } from "../src";
-import { createBuildRole, type PipelineConfig } from "../src";
+import { createBuildRole, createCodePipeline, createPipeline, getSSMParam, type PipelineConfig } from "../src";
 
 const pipelines: PipelineConfig[] = [
   {
@@ -23,7 +22,7 @@ const pipelines: PipelineConfig[] = [
       owner: "jacobg1",
       branch: "main",
       commands: {
-        install: ["npm i -g serverless@4.17.1", "npm ci"],
+        install: ["npm i -g serverless@3.40.0", "npm ci"],
         test: ["npm run deploy:test"],
         prod: ["npm run deploy"],
       },
@@ -37,7 +36,7 @@ const pipelines: PipelineConfig[] = [
       owner: "jacobg1",
       branch: "main",
       commands: {
-        install: ["npm i -g serverless@4.17.1 @nestjs/cli@11.0.10 turbo@2.5.5", "npm ci"],
+        install: ["npm i -g serverless@3.40.0 @nestjs/cli@11.0.10 turbo@2.5.5", "npm ci"],
         test: ["npm run deploy:test"],
         prod: ["npm run deploy"],
       },
