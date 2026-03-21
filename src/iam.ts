@@ -77,7 +77,8 @@ function addPermissions(role: Role): Role {
         "s3:PutBucketVersioning",
         "s3:GetBucketLocation",
         "s3:PutBucketTagging",
-        "s3:PutEncryptionConfiguration"
+        "s3:PutEncryptionConfiguration",
+        "s3:PutBucketPolicy"
       ],
     })
   );
