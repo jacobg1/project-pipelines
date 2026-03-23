@@ -66,6 +66,7 @@ function addPermissions(role: Role): Role {
       resources: [
         "arn:aws:s3:::serverless-framework-deployments-*",
         "arn:aws:s3:::concert-search-*",
+        "arn:aws:s3:::nasa-search-*"
       ],
       actions: [
         "s3:ListBucket",
