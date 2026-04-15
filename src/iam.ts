@@ -116,6 +116,20 @@ function addPermissions(role: Role): Role {
   role.addToPolicy(
     new PolicyStatement({
       effect: Effect.ALLOW,
+      resources: [
+        "arn:aws:iam::*:role/cdk-*-cfn-exec-role-*",
+        "arn:aws:iam::*:role/cdk-*-deploy-role-*",
+        "arn:aws:iam::*:role/cdk-*-file-publishing-role-*",
+        "arn:aws:iam::*:role/cdk-*-image-publishing-role-*",
+        "arn:aws:iam::*:role/cdk-*-lookup-role-*",
+      ],
+      actions: ["sts:AssumeRole"],
+    }),
+  );
+
+  role.addToPolicy(
+    new PolicyStatement({
+      effect: Effect.ALLOW,
       resources: ["arn:aws:lambda:*"],
       actions: [
         "lambda:GetFunctionConfiguration",
