@@ -75,6 +75,15 @@ export function createCodePipeline(
       }),
       commands: synth,
     }),
+    synthCodeBuildDefaults: {
+      partialBuildSpec: BuildSpec.fromObject({
+        phases: {
+          "runtime-versions": {
+            nodejs: "24.x",
+          },
+        },
+      }),
+    },
   });
 
   return pipeline;
