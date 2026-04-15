@@ -64,6 +64,7 @@ function addPermissions(role: Role): Role {
         "cloudformation:ListStackRefactors",
         "cloudformation:ListStacks",
         "cloudformation:GetTemplate",
+        "cloudformation:DescribeEvents",
       ],
     }),
   );
