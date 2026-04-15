@@ -77,9 +77,12 @@ export function createCodePipeline(
     }),
     synthCodeBuildDefaults: {
       partialBuildSpec: BuildSpec.fromObject({
+        version: "0.2",
         phases: {
-          "runtime-versions": {
-            nodejs: "24.x",
+          install: {
+            "runtime-versions": {
+              nodejs: "24",
+            },
           },
         },
       }),
