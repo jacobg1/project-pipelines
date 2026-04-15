@@ -18,6 +18,7 @@ function addPermissions(role: Role): Role {
       resources: [
         createArn("ssm", "parameter/serverless-framework/deployment/s3-bucket"),
         createArn("ssm", "parameter/serverless/login/key"),
+        createArn("ssm", "parameter/cdk-bootstrap/*"),
         createArn("ssm", "parameter/nasa-search/api-url"),
         createArn("ssm", "parameter/nasa-search/website-url"),
         createArn("ssm", "parameter/space-search-*/obj-key"),
