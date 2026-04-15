@@ -73,6 +73,7 @@ function addPermissions(role: Role): Role {
       effect: Effect.ALLOW,
       resources: [
         "arn:aws:s3:::serverless-framework-deployments-*",
+        "arn:aws:s3:::cdk-*-assets-*",
         "arn:aws:s3:::concert-search-*",
         "arn:aws:s3:::nasa-search-*",
         "arn:aws:s3:::space-search-*",
