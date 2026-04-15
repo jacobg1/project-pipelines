@@ -1,4 +1,9 @@
-import { Effect, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import {
+  Effect,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+} from "aws-cdk-lib/aws-iam";
 import { ProjectPipelinesStack } from "../lib/project-pipelines-stack";
 
 function createArn(service: string, name: string) {
@@ -14,12 +19,14 @@ function addPermissions(role: Role): Role {
         createArn("ssm", "parameter/serverless-framework/deployment/s3-bucket"),
         createArn("ssm", "parameter/serverless/login/key"),
         createArn("ssm", "parameter/nasa-search/api-url"),
+        createArn("ssm", "parameter/nasa-search/website-url"),
+        createArn("ssm", "parameter/space-search-*/obj-key"),
         createArn("ssm", "parameter/concert-search/api-url"),
         createArn("ssm", "parameter/concert-search/metadata-url"),
         createArn("ssm", "parameter/concert-search/advanced-search-url"),
       ],
       actions: ["ssm:GetParameters", "ssm:GetParameter"],
-    })
+    }),
   );
 
   role.addToPolicy(
@@ -41,7 +48,7 @@ function addPermissions(role: Role): Role {
         "cloudformation:ValidateTemplate",
         "cloudformation:ListStackResources",
       ],
-    })
+    }),
   );
 
   role.addToPolicy(
@@ -57,7 +64,7 @@ function addPermissions(role: Role): Role {
         "cloudformation:ListStacks",
         "cloudformation:GetTemplate",
       ],
-    })
+    }),
   );
 
   role.addToPolicy(
@@ -66,7 +73,8 @@ function addPermissions(role: Role): Role {
       resources: [
         "arn:aws:s3:::serverless-framework-deployments-*",
         "arn:aws:s3:::concert-search-*",
-        "arn:aws:s3:::nasa-search-*"
+        "arn:aws:s3:::nasa-search-*",
+        "arn:aws:s3:::space-search-*",
       ],
       actions: [
         "s3:ListBucket",
@@ -79,9 +87,9 @@ function addPermissions(role: Role): Role {
         "s3:GetBucketLocation",
         "s3:PutBucketTagging",
         "s3:PutEncryptionConfiguration",
-        "s3:PutBucketPolicy"
+        "s3:PutBucketPolicy",
       ],
-    })
+    }),
   );
 
   role.addToPolicy(
@@ -98,7 +106,7 @@ function addPermissions(role: Role): Role {
         "iam:PutRolePolicy",
         "iam:DeleteRole",
       ],
-    })
+    }),
   );
 
   role.addToPolicy(
@@ -118,15 +126,19 @@ function addPermissions(role: Role): Role {
         "lambda:AddPermission",
         "lambda:RemovePermission",
       ],
-    })
+    }),
   );
 
   role.addToPolicy(
     new PolicyStatement({
       effect: Effect.ALLOW,
       resources: ["arn:aws:logs:*"],
-      actions: ["logs:DeleteLogGroup", "logs:CreateLogGroup", "logs:TagResource"],
-    })
+      actions: [
+        "logs:DeleteLogGroup",
+        "logs:CreateLogGroup",
+        "logs:TagResource",
+      ],
+    }),
   );
 
   role.addToPolicy(
@@ -145,7 +157,7 @@ function addPermissions(role: Role): Role {
         "apigateway:DELETE",
         "apigateway:TagResource",
       ],
-    })
+    }),
   );
 
   return role;
@@ -159,7 +171,10 @@ function createRole(stack: ProjectPipelinesStack, name: string): Role {
   return buildRole;
 }
 
-export function createBuildRole(stack: ProjectPipelinesStack, name: string): Role {
+export function createBuildRole(
+  stack: ProjectPipelinesStack,
+  name: string,
+): Role {
   const buildRole = createRole(stack, name);
   return addPermissions(buildRole);
 }

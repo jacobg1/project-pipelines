@@ -1,15 +1,27 @@
 import { BuildSpec, PipelineProject } from "aws-cdk-lib/aws-codebuild";
-import { ActionCategory, Artifact, Pipeline, PipelineType } from "aws-cdk-lib/aws-codepipeline";
+import {
+  ActionCategory,
+  Artifact,
+  Pipeline,
+  PipelineType,
+} from "aws-cdk-lib/aws-codepipeline";
 import {
   CodeBuildAction,
   CodeStarConnectionsSourceAction,
   ManualApprovalAction,
 } from "aws-cdk-lib/aws-codepipeline-actions";
-import { CodePipeline, CodePipelineSource, ShellStep } from "aws-cdk-lib/pipelines";
+import {
+  CodePipeline,
+  CodePipelineSource,
+  ShellStep,
+} from "aws-cdk-lib/pipelines";
 import { ProjectPipelinesStack } from "../lib/project-pipelines-stack";
 import { CreateCodePipelineProps, CreatePipelineProps } from "./types";
 
-function createBuildSpec(buildCommand: string[], installCommand: string[]): BuildSpec {
+function createBuildSpec(
+  buildCommand: string[],
+  installCommand: string[],
+): BuildSpec {
   return BuildSpec.fromObject({
     version: "0.2",
     env: {
@@ -26,7 +38,7 @@ function createBuildSpec(buildCommand: string[], installCommand: string[]): Buil
     phases: {
       install: {
         "runtime-versions": {
-          nodejs: "22.x",
+          nodejs: "24.x",
         },
         commands: installCommand,
       },
@@ -43,7 +55,13 @@ function createBuildSpec(buildCommand: string[], installCommand: string[]): Buil
 export function createCodePipeline(
   stack: ProjectPipelinesStack,
   pipelineName: string,
-  { name, owner, branch, connectionArn, commands: { synth } }: CreateCodePipelineProps
+  {
+    name,
+    owner,
+    branch,
+    connectionArn,
+    commands: { synth },
+  }: CreateCodePipelineProps,
 ): CodePipeline {
   if (!synth?.length) {
     throw new Error("Missing synth command");
@@ -72,7 +90,7 @@ export function createPipeline(
     role,
     connectionArn,
     commands: { install, test, prod },
-  }: CreatePipelineProps
+  }: CreatePipelineProps,
 ): Pipeline {
   if (!test?.length) {
     throw new Error("Missing test command");
@@ -99,19 +117,27 @@ export function createPipeline(
 
   const deployToTestAction = new CodeBuildAction({
     actionName: `${pipelineName}-CodeBuildTest`,
-    project: new PipelineProject(stack, `${pipelineName}-CodeBuildProjectTest`, {
-      buildSpec: createBuildSpec(test, install),
-      role,
-    }),
+    project: new PipelineProject(
+      stack,
+      `${pipelineName}-CodeBuildProjectTest`,
+      {
+        buildSpec: createBuildSpec(test, install),
+        role,
+      },
+    ),
     input: sourceArtifact,
   });
 
   const deployToProdAction = new CodeBuildAction({
     actionName: `${pipelineName}-CodeBuildProd`,
-    project: new PipelineProject(stack, `${pipelineName}-CodeBuildProjectProd`, {
-      buildSpec: createBuildSpec(prod, install),
-      role,
-    }),
+    project: new PipelineProject(
+      stack,
+      `${pipelineName}-CodeBuildProjectProd`,
+      {
+        buildSpec: createBuildSpec(prod, install),
+        role,
+      },
+    ),
     input: sourceArtifact,
   });
 

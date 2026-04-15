@@ -1,7 +1,15 @@
 import * as cdk from "aws-cdk-lib";
 
 import { Construct } from "constructs";
-import { createBuildRole, createCodePipeline, createPipeline, getSSMParam, type PipelineConfig } from "../src";
+import {
+  createBuildRole,
+  createCodePipeline,
+  createPipeline,
+  getSSMParam,
+  type PipelineConfig,
+} from "../src";
+
+const codeArn = "/project-pipeline/code-connection";
 
 const pipelines: PipelineConfig[] = [
   {
@@ -22,7 +30,7 @@ const pipelines: PipelineConfig[] = [
       owner: "jacobg1",
       branch: "main",
       commands: {
-        install: ["npm i -g serverless@3.40.0", "npm ci"],
+        install: ["npm ci"],
         test: ["npm run deploy:test"],
         prod: ["npm run deploy"],
       },
@@ -36,7 +44,10 @@ const pipelines: PipelineConfig[] = [
       owner: "jacobg1",
       branch: "main",
       commands: {
-        install: ["npm i -g serverless@3.40.0 @nestjs/cli@11.0.10 turbo@2.5.5", "npm ci"],
+        install: [
+          "npm i -g serverless@3.40.0 @nestjs/cli@11.0.10 turbo@2.5.5",
+          "npm ci",
+        ],
         test: ["npm run deploy:test"],
         prod: ["npm run deploy"],
       },
@@ -48,7 +59,7 @@ export class ProjectPipelinesStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const connectionArn = getSSMParam(this, "/project-pipeline/code-connection");
+    const connectionArn = getSSMParam(this, codeArn);
     const role = createBuildRole(this, "ProjectPipelinesRole");
 
     pipelines.forEach(({ pipeLineName, createFunction, props }) => {
