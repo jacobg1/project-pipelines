@@ -18,6 +18,12 @@ import {
 import { ProjectPipelinesStack } from "../lib/project-pipelines-stack";
 import { CreateCodePipelineProps, CreatePipelineProps } from "./types";
 
+const nodeVersion = {
+  "runtime-versions": {
+    nodejs: "24",
+  },
+};
+
 function createBuildSpec(
   buildCommand: string[],
   installCommand: string[],
@@ -37,9 +43,7 @@ function createBuildSpec(
     },
     phases: {
       install: {
-        "runtime-versions": {
-          nodejs: "24.x",
-        },
+        ...nodeVersion,
         commands: installCommand,
       },
       // pre_build: {
@@ -51,6 +55,13 @@ function createBuildSpec(
     },
   });
 }
+
+const codePipelineSpec = BuildSpec.fromObject({
+  version: "0.2",
+  phases: {
+    install: nodeVersion,
+  },
+});
 
 export function createCodePipeline(
   stack: ProjectPipelinesStack,
@@ -75,18 +86,8 @@ export function createCodePipeline(
       }),
       commands: synth,
     }),
-    synthCodeBuildDefaults: {
-      partialBuildSpec: BuildSpec.fromObject({
-        version: "0.2",
-        phases: {
-          install: {
-            "runtime-versions": {
-              nodejs: "24",
-            },
-          },
-        },
-      }),
-    },
+    selfMutationCodeBuildDefaults: { partialBuildSpec: codePipelineSpec },
+    synthCodeBuildDefaults: { partialBuildSpec: codePipelineSpec },
   });
 
   return pipeline;
