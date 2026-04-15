@@ -19,7 +19,9 @@ const pipelines: PipelineConfig[] = [
       name: "project-pipelines",
       owner: "jacobg1",
       branch: "main",
-      commands: { synth: ["npm ci", "npm run build", "npx cdk synth"] },
+      commands: {
+        synth: ["npm ci", "npm run build", "npx cdk synth"],
+      },
     },
   },
   {
